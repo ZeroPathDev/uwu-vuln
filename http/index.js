@@ -47,7 +47,9 @@ app.get('/fetch', async (req, res) => {
   }
 
     const resp = await axios.get(url);
-    res.send(resp.data);
+    // Mitigate XSS: send fetched content as plain text and enforce strict CSP
+    res.set('Content-Security-Policy', "default-src 'none'; script-src 'none'; object-src 'none';");
+    res.type('text/plain').send(resp.data);
   } catch (e) {
     res.status(500).send(e.message);
   }
